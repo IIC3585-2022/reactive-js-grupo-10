@@ -6,7 +6,7 @@ import { DIRECTIONS, FPS, POINTS_PER_DOT, SPEED } from "./constants";
 import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower } from "./utils";
   
 
-const INITIAL_DIRECTION = DIRECTIONS[ 40 ];
+const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
 
 const canvas = createCanvasElement();
 const ctx = canvas.getContext( '2d' );
@@ -40,7 +40,7 @@ let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().sha
 let applesEaten = apples$
     .skip( 1 )
     .map( _ => 1 )
-    .do( ::length$.next )
+    .do(length$.next.bind(length$))
     .subscribe();
 
 let score$ = length$

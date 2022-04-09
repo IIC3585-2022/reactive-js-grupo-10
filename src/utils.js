@@ -1,10 +1,10 @@
 import { POINT_COUNT, POWER_COUNT } from "./constants";
-import { COLS, ROWS, checkCollision } from './canvas';
+import { COLS, ROWS, checkCollision, CANVAS_WIDTH, CANVAS_HEIGHT } from './canvas';
 
 export function generatePacman() {
     let pac = [];
 
-    pac.push( { x: 0, y: 0 } );
+    pac.push( { x: COLS/2, y: ROWS/2 } );
 
     return pac;
 }
