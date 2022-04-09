@@ -22,3 +22,5 @@ export const DIRECTIONS = {
     68: { x:  1, y:  0 },
     83: { x:  0, y:  1 },
 };
+
+export const GHOST_PROBABILITY_RANDOM = 0.5;

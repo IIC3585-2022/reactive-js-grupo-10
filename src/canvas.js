@@ -1,5 +1,5 @@
-export const COLS          = 80;
-export const ROWS          = 60;
+export const COLS          = 40;
+export const ROWS          = 40;
 export const GAP_SIZE      = 1;
 export const CELL_SIZE     = 10;
 export const CANVAS_WIDTH  = COLS * ( CELL_SIZE + GAP_SIZE );
@@ -43,6 +43,7 @@ export function render( ctx, scene ) {
     renderPac( ctx, scene.pacman );
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
+    renderGhost(ctx, scene.ghost)
     drawSquare(ctx)
 }
 
@@ -60,7 +61,11 @@ export function renderWalls( ctx, walls){
 }
 
 export function renderPac( ctx, pacman ) {
-    paintCell( ctx, wrapBounds( pacman[0] ), "yellow") ;
+    paintCell( ctx, wrapBounds( pacman[0] ), "yellow");
+}
+
+export function renderGhost(ctx, ghost) {
+    paintCell( ctx, wrapBounds( ghost[0] ), "red");
 }
 
 export function renderPoints( ctx, points ) {

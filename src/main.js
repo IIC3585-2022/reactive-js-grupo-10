@@ -3,7 +3,7 @@ import { animationFrame } from 'rxjs/scheduler/animationFrame';
 
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, SPEED } from "./constants";
-import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower } from "./utils";
+import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhost } from "./utils";
   
 
 const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
@@ -13,6 +13,7 @@ const ctx = canvas.getContext( '2d' );
 document.body.appendChild( canvas );
 
 let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
+
 
 let tick$ = Observable.interval( SPEED );
 
@@ -29,6 +30,11 @@ let pacman$ = tick$
     .withLatestFrom( direction$, ( _, direction ) => ({ direction }) )
     .scan( move, generatePacman() )
     .share();
+
+let ghost$ = tick$
+.withLatestFrom(pacman$,( _, pacmanPos ) => ({ pacmanPos }))
+.scan( moveGhost, generateGhost() )
+.share();
 
 let apples$ = pacman$
     .scan( eat, generateApples() )
@@ -48,8 +54,8 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, 
-    ( pacman, apples, score, powers ) => ({ pacman, apples, score , powers}) );
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghost$,
+    ( pacman, apples, score, powers,ghost ) => ({ pacman, apples, score , powers,ghost}) );
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
