@@ -1,16 +1,16 @@
-import { createCanvasElement } from "./canvas";
 import { Observable, BehaviorSubject } from 'rxjs';
+import { animationFrame } from 'rxjs/scheduler/animationFrame';
+
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, SPEED } from "./constants";
 import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower } from "./utils";
   
+
 const INITIAL_DIRECTION = DIRECTIONS[ 40 ];
 
 const canvas = createCanvasElement();
 const ctx = canvas.getContext( '2d' );
 document.body.appendChild( canvas );
-document.body.style.background = 'black';
-document.body.style.margin = 0;
 
 let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
 

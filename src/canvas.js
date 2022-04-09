@@ -1,52 +1,17 @@
-export const COLS          = 30;
-export const ROWS          = 30;
+export const COLS          = 40;
+export const ROWS          = 15;
 export const GAP_SIZE      = 1;
 export const CELL_SIZE     = 10;
 export const CANVAS_WIDTH  = COLS * ( CELL_SIZE + GAP_SIZE );
 export const CANVAS_HEIGHT = ROWS * ( CELL_SIZE + GAP_SIZE );
 
-const dimensionWidth = innerWidth-40
-const dimensionHeight = innerHeight-40
-const offset = 20;
-const spaceSize = 25;
-const drawSquare = (ctx) => {
-    const halfHeight = Math.trunc(dimensionHeight/2)
-    const halfWidth = Math.trunc(dimensionWidth/2)
-    ctx.moveTo(20, 20);
-    ctx.lineWidth = 10;
-    ctx.strokeStyle = 'blue'
-    ctx.strokeRect(20, 20, dimensionWidth, dimensionHeight);
-    // espacio izq
-    ctx.moveTo(20, halfHeight-spaceSize);
-    ctx.lineTo(20,halfHeight+spaceSize)
-    //espacio abajo
-    ctx.moveTo(halfWidth+offset-spaceSize, dimensionHeight+offset);
-    ctx.lineTo(halfWidth+offset+spaceSize,dimensionHeight+offset);
-    //espacio derecha
-    ctx.moveTo(dimensionWidth+offset, halfHeight+offset-25);
-    ctx.lineTo(dimensionWidth+offset,halfHeight+offset+25);
-    //espacio arriba
-    ctx.moveTo(halfWidth+offset-25, offset);
-    ctx.lineTo(halfWidth+offset+25, offset);
-    ctx.strokeStyle = 'black'
-    ctx.stroke();
-    
-}
-export function createCanvasElement() {
-    const canvas = document.createElement( 'canvas' );
-    canvas.width = innerWidth;
-    canvas.height = innerHeight;
-    var ctx = canvas.getContext("2d");
-    drawSquare(ctx)
-    return canvas;
-}
 
-/* export function createCanvasElement() {
+export function createCanvasElement() {
     const canvas = document.createElement( 'canvas' );
     canvas.width = CANVAS_WIDTH;
     canvas.height = CANVAS_HEIGHT + 100;
     return canvas;
-} */
+}
 
 export function render( ctx, scene ) {
     renderBackground( ctx, scene.score );
@@ -55,14 +20,14 @@ export function render( ctx, scene ) {
     renderPower( ctx, scene.powers);
 }
 
-/* export function renderBackground( ctx, score ) {
+export function renderBackground( ctx, score ) {
     ctx.fillStyle = 'rgba( 0,0,0, .2 )';
     ctx.fillRect( 0, 0, CANVAS_WIDTH, CANVAS_HEIGHT + 400 );
 
     ctx.font = '20px Arial';
     ctx.fillStyle = 'white';
     ctx.fillText( `Score: ${score}`, 40, CANVAS_HEIGHT + 70 );
-} */
+}
 
 export function renderWalls( ctx, walls){
 
