@@ -3,7 +3,8 @@ import { animationFrame } from 'rxjs/scheduler/animationFrame';
 
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, SPEED } from "./constants";
-import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower } from "./utils";
+import { generateApples, generatePacman, generatePower, generateGhost,
+     move, nextDirection, eat, eatPower } from "./utils";
   
 
 const INITIAL_DIRECTION = DIRECTIONS[ 40 ];
@@ -23,6 +24,17 @@ let direction$ = keyDown$
     .scan( nextDirection )
     .distinctUntilChanged();
 
+let ghostDirection$ = tick$
+.map( ( e ) => DIRECTIONS[ 37 ] )
+.filter( direction => !!direction )
+.startWith( 37 )
+.scan( nextDirection )
+.distinctUntilChanged();
+
+console.log(direction$)
+console.log(ghostDirection$)
+
+
 let length$ = new BehaviorSubject(  );
 
 let pacman$ = tick$
@@ -31,11 +43,14 @@ let pacman$ = tick$
     .scan( move, generatePacman() )
     .share();
 
+let ghost$ = Observable.interval( SPEED );
+//tick$.throttleTime(100).withLatestFrom( ghostDirection$, ( _, ghostDirection ) => ({ ghostDirection }) ).scan( move, generatePacman() ).share();
+
 let apples$ = pacman$
     .scan( eat, generateApples() )
     .distinctUntilChanged()
-    .share()
-;
+    .share();
+
 let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
 
 let applesEaten = apples$
@@ -49,7 +64,7 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, 
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$,
     ( pacman, apples, score, powers ) => ({ pacman, apples, score , powers}) );
 
 let game$ = Observable.interval( 1000/ FPS )

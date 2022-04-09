@@ -18,6 +18,7 @@ export function render( ctx, scene ) {
     renderPac( ctx, scene.pacman );
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
+    //renderGhost(ctx, scene.ghost)
 }
 
 export function renderBackground( ctx, score ) {
@@ -35,6 +36,10 @@ export function renderWalls( ctx, walls){
 
 export function renderPac( ctx, pacman ) {
     paintCell( ctx, wrapBounds( pacman[0] ), "yellow") ;
+}
+
+export function renderGhost( ctx, ghost ) {
+    paintCell( ctx, wrapBounds( ghost[0] ), "pink") ;
 }
 
 export function renderPoints( ctx, points ) {
