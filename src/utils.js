@@ -1,5 +1,8 @@
+import { timer } from 'rxjs'; 
 import { POINT_COUNT, POWER_COUNT } from "./constants";
 import { COLS, ROWS, checkCollision } from './canvas';
+
+
 
 export function generatePacman() {
     let pac = [];

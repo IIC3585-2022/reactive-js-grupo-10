@@ -26,6 +26,7 @@ let direction$ = keyDown$
 let length$ = new BehaviorSubject(  );
 
 let pacman$ = tick$
+    .throttleTime(100)
     .withLatestFrom( direction$, ( _, direction ) => ({ direction }) )
     .scan( move, generatePacman() )
     .share();
