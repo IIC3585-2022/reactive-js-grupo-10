@@ -9,9 +9,11 @@ const dimensionWidth = innerWidth-40
 const dimensionHeight = innerHeight-40
 const offset = 20;
 const spaceSize = 25;
+export const halfHeight = Math.trunc(dimensionHeight/2);
+export const halfWidth = Math.trunc(dimensionWidth/2);
+
+
 const drawSquare = (ctx) => {
-    const halfHeight = Math.trunc(dimensionHeight/2)
-    const halfWidth = Math.trunc(dimensionWidth/2)
     ctx.moveTo(20, 20);
     ctx.lineWidth = 10;
     ctx.strokeStyle = 'blue'

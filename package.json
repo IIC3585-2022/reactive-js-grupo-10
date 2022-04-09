@@ -1,4 +1,4 @@
-{
+{ "type": "module",
   "name": "pacman",
   "version": "1.0.0",
   "description": "",
@@ -26,6 +26,8 @@
     "webpack-dev-server": "^2.9.2"
   },
   "dependencies": {
-    "rxjs": "^5.4.3"
+    "rxjs": "^7.5.5"
   }
+
+
 }
