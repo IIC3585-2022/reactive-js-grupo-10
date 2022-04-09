@@ -93,15 +93,15 @@ export function paintSmall( ctx, point, color ) {
 export function wrapBounds( point ) {
     const y_condition = (point.y >= (ROWS/2)-3) && (point.y <= ROWS/2)
     const x_condition = (point.x >= (COLS/2)-3)&& (point.x <= COLS/2)
-    const isAtRightSpace = point.x >= COLS && y_condition
-    const isAtLeftSpace = point.x < 0 && y_condition
-    const isAtUpperBound = point.y < 0 && x_condition
-    const isAtLowerBound = point.y >= ROWS && x_condition
+    const isAtRightSpace = point.x >= COLS-2 && y_condition
+    const isAtLeftSpace = point.x < 1 && y_condition
+    const isAtUpperSpace = point.y < 1 && x_condition
+    const isAtLowerSpace = point.y >= ROWS-1 && x_condition
     const isAtSideBound = (x) => x < 1 ? 1 : x > COLS-2 ? COLS-2 : x
+    const isAtLongBound = (y) => y < 1 ? 1 : y > ROWS-2 ? ROWS-2 : y
     //console.log(isAtRightBound)
-    const x = isAtRightSpace ? 0 : isAtLeftSpace ? COLS - 1 : isAtSideBound(point.x)
-    const y = isAtLowerBound ? 0 : isAtUpperBound ? ROWS - 1 : point.y;
-    console.log(x)
+    const x = isAtRightSpace ? 1 : isAtLeftSpace ? COLS - 3 : isAtSideBound(point.x)
+    const y = isAtLowerSpace ? 1 : isAtUpperSpace ? ROWS - 3 : isAtLongBound(point.y);
     point.x = x;
     point.y = y;
 

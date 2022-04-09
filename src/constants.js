@@ -8,7 +8,7 @@ export const POINTS_PER_DOT = 10;
 
 // Mientras mas alto el numero, mas lento va
 // Milisegundos entre actualizaciones
-export const SPEED = 130;
+export const SPEED = 100;
 
 export const FPS = 120;
 
