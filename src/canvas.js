@@ -16,7 +16,7 @@ export function createCanvasElement() {
 export function render( ctx, scene ) {
     renderBackground( ctx, scene.score );
     renderPac( ctx, scene.pacman );
-    renderWalls(ctx, scene.walls)
+    renderWalls( ctx, scene.walls)
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
     scene.ghosts.forEach(ghost => renderGhost(ctx, ghost, scene.powerState))
@@ -71,7 +71,7 @@ export function paintSmall( ctx, point, color ) {
     const y = point.y * ( CELL_SIZE + GAP_SIZE );
 
     ctx.fillStyle = color;
-    ctx.fillRect( x + CELL_SIZE/4, y + CELL_SIZE/4, CELL_SIZE/2, CELL_SIZE/2 );
+    ctx.fillRect( x + CELL_SIZE/4, y + CELL_SIZE/4, CELL_SIZE/4, CELL_SIZE/4 );
 }
 export function wrapBounds( point ) {
     const x = point.x >= COLS ? 0 : point.x < 0 ? COLS - 1 : point.x;

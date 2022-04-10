@@ -118,10 +118,13 @@ export function nextDirection( previous, next ) {
 export function generateApples() {
     let apples = [];
 
-    for ( let i = 0; i < POINT_COUNT; i++ ) {
-        apples.push( getRandomPosition() );
+    for ( let i = 0; i < BOARD[1]; i++ ) {
+        for ( let j = 0; j < BOARD[0]; j++ ) {
+            if (BOARD[2][i][j] == " "){
+                apples.push({x:j, y:i})
+            }
+        }
     }
-    console.log(apples)
     return apples;
 }
 
@@ -161,11 +164,14 @@ export function getRandomPosition(pac = []) {
         return position;
     }
 
-    return getRandomInt(pac);
+    return getRandomPosition(pac);
 }
 
 function isEmptyCell( position, pac ) {
-    return !pac.some( segment => checkCollision( segment, position ) );
+    if (BOARD[2][position.y][position.x] == " "){
+        return true
+    }
+    return false
 }
 
 function getRandomInt(min, max) {
@@ -186,8 +192,6 @@ export function eat( apples, pac ) {
 }
 
 export function wallColission( walls, pac ) {
-    
-
     return walls;
 }
 
