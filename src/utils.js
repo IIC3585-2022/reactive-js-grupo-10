@@ -1,5 +1,6 @@
 import { POINT_COUNT, POWER_COUNT, DIRECTIONS, GHOST_PROBABILITY_RANDOM } from "./constants";
 import { COLS, ROWS, checkCollision, CANVAS_WIDTH, CANVAS_HEIGHT } from './canvas';
+import { BOARD } from './board';
 
 export function generatePacman() {
     let pac = [];
@@ -105,8 +106,23 @@ export function generateApples() {
     for ( let i = 0; i < POINT_COUNT; i++ ) {
         apples.push( getRandomPosition() );
     }
-
+    console.log(apples)
     return apples;
+}
+
+export function generateWalls() {
+    let walls = [];
+
+    for ( let i = 0; i < BOARD[1]; i++ ) {
+        for ( let j = 0; j < BOARD[0]; j++ ) {
+            if (BOARD[2][i][j] == "x"){
+                walls.push({x:j, y:i})
+            }
+        }
+    }
+
+    console.log(walls)
+    return walls;
 }
 
 export function generatePower() {
@@ -152,6 +168,19 @@ export function eat( apples, pac ) {
     }
 
     return apples;
+}
+
+export function wallColission( powers, pac ) {
+    let head = pac[ 0 ];
+
+    for ( let i = 0; i < powers.length; i++ ) {
+        if ( checkCollision( powers[ i ], head ) ) {
+            powers.splice( i, 1 );
+            return [ ...powers ];
+        }
+    }
+
+    return powers;
 }
 
 export function eatPower( powers, pac ) {

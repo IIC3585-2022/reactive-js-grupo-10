@@ -3,7 +3,8 @@ import { animationFrame } from 'rxjs/scheduler/animationFrame';
 
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, PACMAN_SPEED, GHOST_SPEED, SCARE_TIME } from "./constants";
-import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhosts, ghostColission  } from "./utils";
+import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, 
+    wallColission, generateWalls, moveGhosts, ghostColission  } from "./utils";
   
 
 const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
@@ -38,6 +39,8 @@ let ghosts$ = ghostTick$
     .scan( moveGhosts, ghosts )
     .share();
 
+let walls$ = pacman$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
+
 let apples$ = pacman$
     .scan( eat, generateApples() )
     .distinctUntilChanged()
@@ -63,8 +66,8 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$,bonusEnd$,
-    ( pacman, apples, score, powers, ghosts, powerState ) => ({ pacman, apples, score , powers, ghosts, powerState}) );
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$, walls$ ,bonusEnd$, 
+    ( pacman, apples, score, powers, ghosts, powerState, walls ) => ({ pacman, apples, score , powers, ghosts, powerState, walls}) );
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
