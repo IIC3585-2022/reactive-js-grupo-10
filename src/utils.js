@@ -26,10 +26,13 @@ export function move( pac, { direction } ) {
     return pac;
 }
 
-export function generateGhost() {
+export function generateGhost(index) {
     let ghost = [];
-    ghost.push( { x: 40, y: 40 } );
-
+    if (index < 3) {
+        ghost.push( { x: COLS+(index-1*10) , y: 1 } );
+        return ghost;
+    }
+    ghost.push( { x: COLS+(index-2*10), y: ROWS+1 } );
     return ghost;
 }
 
@@ -57,25 +60,28 @@ const getRandomMove = () => {
     return  DIRECTIONS[random]
 }
 // recibe la posición del fantasma y la del pacman, así podróa moverse en direccion al fantasma
-export function moveGhost( ghost, { pacmanPos } ) {
-    let nx = ghost[ 0 ].x;
-    let ny = ghost[ 0 ].y;
-    let direction;
-    if (Math.random() > GHOST_PROBABILITY_RANDOM) {
-        direction = getMoveTowards(ghost, pacmanPos);
-    } else {
-        direction = getRandomMove();
-    }
-    nx += direction.x ;
-    ny += direction.y;
-    ghost.pop();
+export function moveGhosts( ghosts, { pacmanPos } ) {
+    return ghosts.map(ghost => {
+        let nx = ghost[ 0 ].x;
+        let ny = ghost[ 0 ].y;
+        let direction;
+        if (Math.random() > GHOST_PROBABILITY_RANDOM) {
+            direction = getMoveTowards(ghost, pacmanPos);
+        } else {
+            direction = getRandomMove();
+        }
+        nx += direction.x ;
+        ny += direction.y;
+        ghost.pop();
 
-    let newpos = {};
-    newpos.x = nx;
-    newpos.y = ny;
+        let newpos = {};
+        newpos.x = nx;
+        newpos.y = ny;
 
-    ghost.push( newpos );
-    return ghost;
+        ghost.push( newpos );
+        return ghost;
+    })
+    
 }
 
 export function nextDirection( previous, next ) {
@@ -113,8 +119,8 @@ export function generatePower() {
 
 export function getRandomPosition(pac = []) {
     let position = {
-        x: getRandomInt(0, COLS - 1),
-        y: getRandomInt(0, ROWS - 1)
+        x: getRandomInt(2, COLS - 2),
+        y: getRandomInt(2, ROWS - 2)
     };
 
     if (isEmptyCell(position, pac)) {

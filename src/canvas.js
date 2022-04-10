@@ -43,7 +43,7 @@ export function render( ctx, scene ) {
     renderPac( ctx, scene.pacman );
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
-    renderGhost(ctx, scene.ghost)
+    scene.ghosts.forEach(ghost => renderGhost(ctx, ghost, scene.powerState))
     drawSquare(ctx)
 }
 
@@ -64,8 +64,8 @@ export function renderPac( ctx, pacman ) {
     paintCell( ctx, wrapBounds( pacman[0] ), "yellow");
 }
 
-export function renderGhost(ctx, ghost) {
-    paintCell( ctx, wrapBounds( ghost[0] ), "red");
+export function renderGhost(ctx, ghost, powerState) {
+    paintCell( ctx, wrapBounds( ghost[0] ), powerState ? 'blue':'red');
 }
 
 export function renderPoints( ctx, points ) {

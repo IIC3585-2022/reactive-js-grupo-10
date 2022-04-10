@@ -8,7 +8,8 @@ export const POINTS_PER_DOT = 10;
 
 // Mientras mas alto el numero, mas lento va
 // Milisegundos entre actualizaciones
-export const SPEED = 100;
+export const PACMAN_SPEED = 100;
+export const GHOST_SPEED = 200;
 
 export const FPS = 120;
 
@@ -23,4 +24,5 @@ export const DIRECTIONS = {
     83: { x:  0, y:  1 },
 };
 
-export const GHOST_PROBABILITY_RANDOM = 0.5;
+export const GHOST_PROBABILITY_RANDOM = 0.95;
+export const SCARE_TIME = 5000; // in miliseconds
