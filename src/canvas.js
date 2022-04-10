@@ -39,6 +39,7 @@ export function createCanvasElement() {
 }
 
 export function render( ctx, scene ) {
+    console.log(scene.seconds)
     renderBackground( ctx, scene.score );
     renderPac( ctx, scene.pacman );
     renderPoints( ctx, scene.apples );
