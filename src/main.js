@@ -29,17 +29,19 @@ let direction$ = keyDown$
 
 let length$ = new BehaviorSubject(  );
 
+let walls$ = tick$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
+
 let pacman$ = tick$
-    .withLatestFrom( direction$, ( _, direction ) => ({ direction }) )
+    .withLatestFrom( direction$, walls$, ( _, direction, walls ) => ({ direction, walls }) )
     .scan( move, generatePacman() )
     .share();
 
+
 let ghosts$ = ghostTick$
-    .withLatestFrom(pacman$,( _, pacmanPos ) => ({ pacmanPos }))
+    .withLatestFrom(pacman$, walls$, ( _, pacmanPos, walls ) => ({ pacmanPos, walls }))
     .scan( moveGhosts, ghosts )
     .share();
 
-let walls$ = pacman$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
 
 let apples$ = pacman$
     .scan( eat, generateApples() )
@@ -66,7 +68,8 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$, walls$ ,bonusEnd$, 
+
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$, powerState$, walls$ ,bonusEnd$, 
     ( pacman, apples, score, powers, ghosts, powerState, walls ) => ({ pacman, apples, score , powers, ghosts, powerState, walls}) );
 
 let game$ = Observable.interval( 1000/ FPS )

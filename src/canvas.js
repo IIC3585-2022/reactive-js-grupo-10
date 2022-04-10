@@ -19,7 +19,6 @@ export function render( ctx, scene ) {
     renderWalls(ctx, scene.walls)
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
-    renderWalls(ctx, scene.walls)
     scene.ghosts.forEach(ghost => renderGhost(ctx, ghost, scene.powerState))
 }
 

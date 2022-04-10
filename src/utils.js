@@ -10,21 +10,28 @@ export function generatePacman() {
     return pac;
 }
 
-export function move( pac, { direction } ) {
+export function move( pac, { direction, walls } ) {
     let nx = pac[ 0 ].x;
     let ny = pac[ 0 ].y;
     nx += direction.x;
     ny += direction.y;
 
-    pac.pop();
 
     let newpos = {};
     newpos.x = nx;
     newpos.y = ny;
 
-    pac.push( newpos );
+    const colission = walls.some(wall => checkCollision( wall, newpos ) )
+    if (colission){
+        return pac;
+    } else{
 
-    return pac;
+        pac.pop();
+
+        pac.push( newpos );
+
+        return pac;
+    }
 }
 
 export function generateGhost(index, color) {
@@ -62,7 +69,7 @@ const getRandomMove = () => {
     return  DIRECTIONS[random]
 }
 // recibe la posición del fantasma y la del pacman, así podróa moverse en direccion al fantasma
-export function moveGhosts( ghosts, { pacmanPos } ) {
+export function moveGhosts( ghosts, { pacmanPos , walls} ) {
     return ghosts.map(ghost => {
         let nx = ghost[ 0 ].x;
         let ny = ghost[ 0 ].y;
@@ -75,15 +82,23 @@ export function moveGhosts( ghosts, { pacmanPos } ) {
         }
         nx += direction.x ;
         ny += direction.y;
-        ghost.pop();
 
         let newpos = {};
         newpos.x = nx;
         newpos.y = ny;
         newpos.color = color;
 
-        ghost.push( newpos );
-        return ghost;
+        const colission = walls.some(wall => checkCollision( wall, newpos ) )
+        if (colission){
+            return ghost;
+        } else{
+
+            ghost.pop();
+
+            ghost.push( newpos );
+
+            return ghost;
+        }
     })
     
 }
@@ -170,17 +185,10 @@ export function eat( apples, pac ) {
     return apples;
 }
 
-export function wallColission( powers, pac ) {
-    let head = pac[ 0 ];
+export function wallColission( walls, pac ) {
+    
 
-    for ( let i = 0; i < powers.length; i++ ) {
-        if ( checkCollision( powers[ i ], head ) ) {
-            powers.splice( i, 1 );
-            return [ ...powers ];
-        }
-    }
-
-    return powers;
+    return walls;
 }
 
 export function eatPower( powers, pac ) {
