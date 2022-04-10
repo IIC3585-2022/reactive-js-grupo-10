@@ -14,13 +14,12 @@ export function createCanvasElement() {
 }
 
 export function render( ctx, scene ) {
-    console.log(scene.seconds)
     renderBackground( ctx, scene.score );
     renderPac( ctx, scene.pacman );
     renderWalls( ctx, scene.walls)
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);
-    scene.ghosts.forEach(ghost => renderGhost(ctx, ghost, scene.powerState))
+    scene.ghosts.forEach(ghost => renderGhost(ctx, ghost))
 }
 
 export function renderBackground( ctx, score ) {
@@ -42,9 +41,9 @@ export function renderPac( ctx, pacman ) {
     paintCell( ctx, wrapBounds( pacman[0] ), "yellow");
 }
 
-export function renderGhost(ctx, ghost, powerState) {
+export function renderGhost(ctx, ghost) {
 
-    paintCell( ctx, wrapBounds( ghost[0] ), powerState ? 'blue': ghost[0].color);
+    paintCell( ctx, wrapBounds( ghost[0] ), ghost[0].scared ? 'blue': ghost[0].color);
 }
 
 export function renderPoints( ctx, points ) {

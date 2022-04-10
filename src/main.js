@@ -12,9 +12,9 @@ const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
 const canvas = createCanvasElement();
 const ctx = canvas.getContext( '2d' );
 document.body.appendChild( canvas );
-const ghosts = [[1,"red"],[2,"pink"],[3,"orange"],[4,"cyan"]].map(i => generateGhost(i[0], i[1]))
+const ghosts = ["red","pink","orange","cyan"].map((color, index) => generateGhost(index, color))
 
-//const ghosts = [(1,"red"),(2,"pink"),(3,"orange"),(4,"cyan")].map(i => generateGhost(i[0], i[1]))
+console.log(ghosts)
 let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
 
 
@@ -28,7 +28,6 @@ let direction$ = keyDown$
     .map( ( e ) => DIRECTIONS[ e.keyCode ] )
     .filter( direction => !!direction )
     .startWith( INITIAL_DIRECTION )
-    .scan( nextDirection )
     .distinctUntilChanged();
 
 let length$ = new BehaviorSubject(  );
@@ -41,10 +40,19 @@ let pacman$ = tick$
     .share();
 
 
+const bonus$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
+const bonusTaken$ = bonus$.scan(function(prevNumber, bonus) {
+    return prevNumber + 1;
+}, -1).timestamp();
+const bonusEnd$ = bonusTaken$.skip(1).delay(SCARE_TIME).timestamp().startWith({
+    timestamp: 0
+});
+
 let ghosts$ = ghostTick$
-    .withLatestFrom(pacman$, walls$, ( _, pacmanPos, walls ) => ({ pacmanPos, walls }))
+    .withLatestFrom(pacman$, walls$, bonusTaken$, bonusEnd$, ( _, pacmanPos, walls, bonusTaken, bonusEnd ) => ({ pacmanPos, walls, bonusTaken, bonusEnd }))
     .scan( moveGhosts, ghosts )
     .share();
+
 
 
 let apples$ = pacman$
@@ -52,10 +60,8 @@ let apples$ = pacman$
     .distinctUntilChanged()
     .share()
 ;
-let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
 
-let powerState$ = powers$.skip( 1 )
-.startWith( false ).scan(state => true).distinctUntilChanged().share()
+
 
 /* let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
@@ -74,8 +80,8 @@ let score$ = length$
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$, powerState$, walls$ ,bonusEnd$, 
-    ( pacman, apples, score, powers, ghosts, powerState, walls ) => ({ pacman, apples, score , powers, ghosts, powerState, walls}) );
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, bonus$, ghosts$, walls$,
+    ( pacman, apples, score, powers, ghosts, walls ) => ({ pacman, apples, score , powers, ghosts, walls}) );
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )

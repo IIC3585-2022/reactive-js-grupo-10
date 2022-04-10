@@ -5,7 +5,7 @@ import { BOARD } from './board';
 export function generatePacman() {
     let pac = [];
 
-    pac.push( { x: COLS/2, y: ROWS/2 } );
+    pac.push( { x: 20, y: 6 } );
 
     return pac;
 }
@@ -35,13 +35,9 @@ export function move( pac, { direction, walls } ) {
 }
 
 export function generateGhost(index, color) {
+    const firstIndex = 16;
     let ghost = [];
-    if (index < 3) {
-        ghost.push( { x: COLS+(index-1*10) , y: 1, color : color} );
-        return ghost;
-    }
-    ghost.push( { x: COLS+(index-2*10), y: ROWS+1 , color : color} );
-    console.log(ghost)
+    ghost.push( { x: firstIndex+index, y: 10 , color : color, direction: {x:0,y:-1}, scared:false} );
     return ghost;
 }
 
@@ -69,8 +65,9 @@ const getRandomMove = () => {
     return  DIRECTIONS[random]
 }
 // recibe la posición del fantasma y la del pacman, así podróa moverse en direccion al fantasma
-export function moveGhosts( ghosts, { pacmanPos , walls} ) {
+export function moveGhosts( ghosts, { pacmanPos, walls, bonusTaken, bonusEnd} ) {
     return ghosts.map(ghost => {
+        let scared = bonusTaken.value > 0 && bonusTaken.timestamp > bonusEnd.timestamp;        
         let nx = ghost[ 0 ].x;
         let ny = ghost[ 0 ].y;
         let color = ghost[0].color;
@@ -78,7 +75,7 @@ export function moveGhosts( ghosts, { pacmanPos , walls} ) {
         if (Math.random() > GHOST_PROBABILITY_RANDOM) {
             direction = getMoveTowards(ghost, pacmanPos);
         } else {
-            direction = getRandomMove();
+            direction = ghost[0].direction;
         }
         nx += direction.x ;
         ny += direction.y;
@@ -87,30 +84,36 @@ export function moveGhosts( ghosts, { pacmanPos , walls} ) {
         newpos.x = nx;
         newpos.y = ny;
         newpos.color = color;
-
-        const colission = walls.some(wall => checkCollision( wall, newpos ) )
-        if (colission){
-            return ghost;
-        } else{
-
-            ghost.pop();
-
-            ghost.push( newpos );
-
-            return ghost;
+        newpos.direction = direction;
+        newpos.scared = scared;
+        let colission = walls.some(wall => checkCollision( wall, newpos ) )
+        while (colission) {
+            direction = getRandomMove();
+            nx = ghost[ 0 ].x;
+            ny = ghost[ 0 ].y;
+            nx += direction.x ;
+            ny += direction.y;
+            newpos.x = nx;
+            newpos.y = ny;
+            newpos.color = color;
+            newpos.direction = direction;
+            colission = walls.some(wall => checkCollision( wall, newpos ) )
         }
+        ghost.pop();
+        ghost.push( newpos );
+        return ghost;
     })
     
 }
 
 export function nextDirection( previous, next ) {
-    const isOpposite = ( previous, next ) => {
+    /* const isOpposite = ( previous, next ) => {
         return next.x === -previous.x || next.y === -previous.y;
     };
 
     if ( isOpposite( previous, next ) ) {
         return previous;
-    }
+    } */
 
     return next;
 }
@@ -139,7 +142,6 @@ export function generateWalls() {
         }
     }
 
-    console.log(walls)
     return walls;
 }
 
@@ -208,9 +210,8 @@ export function eatPower( powers, pac ) {
     return powers;
 }
 
-export function ghostColission( pac , ghosts, powerState ) {
-    console.log(powerState)
-    if (powerState){
+export function ghostColission( pac , ghosts ) {
+    if (ghosts.every((ghost => ghost[0].scared))){
         for ( let i = 0; i < ghosts.length; i++ ) {
             if ( checkCollision( ghosts[ i ][0], pac[0] ) ) {
                 ghosts.splice( i, 1 );
