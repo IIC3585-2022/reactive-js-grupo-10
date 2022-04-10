@@ -37,6 +37,8 @@ let direction2$ = keyDown$
 
 let length$ = new BehaviorSubject(  );
 
+//Instanciando ambos pacman
+
 let pacman$ = tick$
     .withLatestFrom( direction$, ( _, direction ) => ({ direction }) )
     .scan( move, generatePacman() )
@@ -47,27 +49,25 @@ let pacman2$ = tick$
     .scan( move, generatePacman() )
     .share();
 
+//---
+
+
 let ghosts$ = ghostTick$
-    .withLatestFrom(pacman$,( _, pacmanPos ) => ({ pacmanPos }))
+    .withLatestFrom(pacman$ && pacman2$ ,( _, pacmanPos ) => ({ pacmanPos }))
     .scan( moveGhosts, ghosts )
     .share();
 
 let walls$ = pacman$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
 let walls2$ = pacman2$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
 
-
-let apples$ = pacman$
+let apples$ =  pacman$
     .scan( eat, generateApples() )
     .distinctUntilChanged()
-    .share()
-;
-let apples2$ = pacman2$
+    
+// apples$.subscribe(pacman2 => console.log(pacman2));
+let apples2$ =  pacman2$
     .scan( eat, generateApples() )
     .distinctUntilChanged()
-    .share()
-;
-apples2$.subscribe(pacman2 => console.log(pacman2));
-
 
 let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
 let powers2$ = pacman2$.scan(eatPower, generatePower()).distinctUntilChanged().share()
@@ -117,8 +117,6 @@ let game2$ = Observable.interval( 1000/ FPS )
     .takeWhile( scene => (
         checkEndCondition( scene.apples, scene.powers ) && 
         ghostColission( scene.pacman, scene.ghosts, scene.powerState))) ;
-
-// game$.subscribe(pacman2 => console.log(pacman2));
 
 game$.subscribe( {
     next: ( scene ) => render( ctx, scene ),
