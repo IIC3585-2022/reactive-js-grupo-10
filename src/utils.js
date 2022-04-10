@@ -26,13 +26,14 @@ export function move( pac, { direction } ) {
     return pac;
 }
 
-export function generateGhost(index) {
+export function generateGhost(index, color) {
     let ghost = [];
     if (index < 3) {
-        ghost.push( { x: COLS+(index-1*10) , y: 1 } );
+        ghost.push( { x: COLS+(index-1*10) , y: 1, color : color} );
         return ghost;
     }
-    ghost.push( { x: COLS+(index-2*10), y: ROWS+1 } );
+    ghost.push( { x: COLS+(index-2*10), y: ROWS+1 , color : color} );
+    console.log(ghost)
     return ghost;
 }
 
@@ -64,6 +65,7 @@ export function moveGhosts( ghosts, { pacmanPos } ) {
     return ghosts.map(ghost => {
         let nx = ghost[ 0 ].x;
         let ny = ghost[ 0 ].y;
+        let color = ghost[0].color;
         let direction;
         if (Math.random() > GHOST_PROBABILITY_RANDOM) {
             direction = getMoveTowards(ghost, pacmanPos);
@@ -77,6 +79,7 @@ export function moveGhosts( ghosts, { pacmanPos } ) {
         let newpos = {};
         newpos.x = nx;
         newpos.y = ny;
+        newpos.color = color;
 
         ghost.push( newpos );
         return ghost;
@@ -162,4 +165,18 @@ export function eatPower( powers, pac ) {
     }
 
     return powers;
+}
+
+export function ghostColission( pac , ghosts, powerState ) {
+    console.log(powerState)
+    if (powerState){
+        for ( let i = 0; i < ghosts.length; i++ ) {
+            if ( checkCollision( ghosts[ i ][0], pac[0] ) ) {
+                ghosts.splice( i, 1 );
+                return [ ...ghosts ];
+            }
+        }
+    }
+    const colission = ghosts.some(ghost => checkCollision( ghost[0], pac[0] ) )
+    return !colission;
 }

@@ -65,7 +65,8 @@ export function renderPac( ctx, pacman ) {
 }
 
 export function renderGhost(ctx, ghost, powerState) {
-    paintCell( ctx, wrapBounds( ghost[0] ), powerState ? 'blue':'red');
+
+    paintCell( ctx, wrapBounds( ghost[0] ), powerState ? 'blue': ghost[0].color);
 }
 
 export function renderPoints( ctx, points ) {
