@@ -1,6 +1,6 @@
-import { Observable, BehaviorSubject, timeInterval } from 'rxjs';
+import { Observable, BehaviorSubject } from 'rxjs';
 import { animationFrame } from 'rxjs/scheduler/animationFrame';
-
+import { timeInterval } from 'rxjs/operators';
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, PACMAN_SPEED, GHOST_SPEED, SCARE_TIME } from "./constants";
 import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhosts, ghostColission  } from "./utils";
@@ -19,6 +19,10 @@ let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
 
 let tick$ = Observable.interval( PACMAN_SPEED );
 let ghostTick$ = Observable.interval( GHOST_SPEED );
+const seconds$ = Observable.interval(1000);
+
+seconds$.pipe(timeInterval()).share()
+
 let direction$ = keyDown$
     .map( ( e ) => DIRECTIONS[ e.keyCode ] )
     .filter( direction => !!direction )
@@ -48,9 +52,10 @@ let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().sha
 let powerState$ = powers$.skip( 1 )
 .startWith( false ).scan(state => true).distinctUntilChanged().share()
 
-const bonusEnd$ = powerState$.skip(1).delay(SCARE_TIME).timestamp().startWith({
-    timestamp: 0
-}).scan((state) => console.log(state));
+/* let game$ = Observable.interval( 1000/ FPS )
+    .withLatestFrom( scene$, ( _, scene ) => scene )
+    .takeWhile( scene => checkEndCondition( scene.apples, scene.powers ) )
+; */
 
 let applesEaten = apples$
     .skip( 1 )
@@ -63,8 +68,13 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
+<<<<<<< HEAD
 let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$,bonusEnd$,
     ( pacman, apples, score, powers, ghosts, powerState ) => ({ pacman, apples, score , powers, ghosts, powerState}) );
+=======
+let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$,seconds$,
+    ( pacman, apples, score, powers, ghosts, powerState, seconds ) => ({ pacman, apples, score , powers, ghosts, powerState, seconds}) );
+>>>>>>> 1408f3cc8b945fcb743c903b4120251cd3384de0
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
