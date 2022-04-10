@@ -3,7 +3,7 @@ import { animationFrame } from 'rxjs/scheduler/animationFrame';
 
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, SPEED } from "./constants";
-import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhost } from "./utils";
+import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhost, ghostColission } from "./utils";
   
 
 const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
@@ -32,9 +32,9 @@ let pacman$ = tick$
     .share();
 
 let ghost$ = tick$
-.withLatestFrom(pacman$,( _, pacmanPos ) => ({ pacmanPos }))
-.scan( moveGhost, generateGhost() )
-.share();
+    .withLatestFrom( pacman$,( _, pacmanPos ) => ({ pacmanPos }))
+    .scan( moveGhost, generateGhost() )
+    .share();
 
 let apples$ = pacman$
     .scan( eat, generateApples() )
@@ -59,7 +59,7 @@ let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghost$
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
-    .takeWhile( scene => checkEndCondition( scene.apples, scene.powers ) )
+    .takeWhile( scene => (checkEndCondition( scene.apples, scene.powers ) && ghostColission( scene.pacman, scene.ghost ))) 
 ;
 
 game$.subscribe( {

@@ -63,6 +63,7 @@ export function moveGhost( ghost, { pacmanPos } ) {
     let direction;
     if (Math.random() > GHOST_PROBABILITY_RANDOM) {
         direction = getMoveTowards(ghost, pacmanPos);
+        //console.log(pacmanPos)
     } else {
         direction = getRandomMove();
     }
@@ -75,6 +76,7 @@ export function moveGhost( ghost, { pacmanPos } ) {
     newpos.y = ny;
 
     ghost.push( newpos );
+
     return ghost;
 }
 
@@ -143,6 +145,16 @@ export function eat( apples, pac ) {
     }
 
     return apples;
+}
+
+export function ghostColission(pac, ghost  ) {
+    
+    if ( checkCollision( ghost[0], pac[0] ) ) {
+        //console.log(head)
+        //console.log(ghost.y)
+        return false
+    }
+    return true;
 }
 
 export function eatPower( powers, pac ) {
