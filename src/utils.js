@@ -1,4 +1,4 @@
-import { POINT_COUNT, POWER_COUNT, DIRECTIONS, GHOST_PROBABILITY_RANDOM } from "./constants";
+import { POINT_COUNT, POWER_COUNT, DIRECTIONS, DIRECTIONS2, GHOST_PROBABILITY_RANDOM } from "./constants";
 import { COLS, ROWS, checkCollision, CANVAS_WIDTH, CANVAS_HEIGHT } from './canvas';
 import { BOARD } from './board';
 
@@ -11,6 +11,31 @@ export function generatePacman() {
 }
 
 export function move( pac, { direction } ) {
+    let nx = pac[ 0 ].x;
+    let ny = pac[ 0 ].y;
+    nx += direction.x;
+    ny += direction.y;
+
+    pac.pop();
+
+    let newpos = {};
+    newpos.x = nx;
+    newpos.y = ny;
+
+    pac.push( newpos );
+
+    return pac;
+}
+
+export function generatePacman2() {
+    let pac = [];
+
+    pac2.push( { x: COLS/2, y: ROWS/2 } );
+
+    return pac;
+}
+
+export function move2( pac, { direction } ) {
     let nx = pac[ 0 ].x;
     let ny = pac[ 0 ].y;
     nx += direction.x;

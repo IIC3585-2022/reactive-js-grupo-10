@@ -18,7 +18,9 @@ export const DIRECTIONS = {
     38: { x:  0, y: -1 },
     39: { x:  1, y:  0 },
     40: { x:  0, y:  1 },
-    
+};
+
+export const DIRECTIONS2 = {
     65: { x: -1, y:  0 },
     87: { x:  0, y: -1 },
     68: { x:  1, y:  0 },
