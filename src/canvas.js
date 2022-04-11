@@ -16,6 +16,7 @@ export function createCanvasElement() {
 export function render( ctx, scene ) {
     renderBackground( ctx, scene.score );
     renderPac( ctx, scene.pacman );
+    renderPac( ctx, scene.pacman2 );
     renderWalls( ctx, scene.walls)
     renderPoints( ctx, scene.apples );
     renderPower( ctx, scene.powers);

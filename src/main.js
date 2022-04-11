@@ -2,7 +2,7 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { animationFrame } from 'rxjs/scheduler/animationFrame';
 import { timeInterval } from 'rxjs/operators';
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
-import { DIRECTIONS, FPS, POINTS_PER_DOT, PACMAN_SPEED, GHOST_SPEED, SCARE_TIME } from "./constants";
+import { DIRECTIONS, DIRECTIONS2, FPS, POINTS_PER_DOT, PACMAN_SPEED, GHOST_SPEED, SCARE_TIME } from "./constants";
 import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, 
     wallColission, generateWalls, moveGhosts, ghostColission  } from "./utils";
   
@@ -14,7 +14,7 @@ const ctx = canvas.getContext( '2d' );
 document.body.appendChild( canvas );
 const ghosts = ["red","pink","orange","cyan"].map((color, index) => generateGhost(index, color))
 
-console.log(ghosts)
+
 let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
 
 
@@ -30,6 +30,13 @@ let direction$ = keyDown$
     .startWith( INITIAL_DIRECTION )
     .distinctUntilChanged();
 
+let direction2$ = keyDown$
+.map( ( e ) => DIRECTIONS2[ e.keyCode ] )
+.filter( direction => !!direction )
+.startWith( INITIAL_DIRECTION )
+.scan( nextDirection )
+.distinctUntilChanged();
+
 let length$ = new BehaviorSubject(  );
 
 let walls$ = tick$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
@@ -39,8 +46,13 @@ let pacman$ = tick$
     .scan( move, generatePacman() )
     .share();
 
+let pacman2$ = tick$
+.withLatestFrom( direction2$, walls$, ( _, direction, walls ) => ({ direction, walls }) )
+.scan( move, generatePacman() )
+.share();
 
-const bonus$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
+const bonus$ = pacman$.withLatestFrom(pacman2$, (pac1 , pac2) => ({pac1, pac2}))
+.scan(eatPower, generatePower()).distinctUntilChanged().share()
 const bonusTaken$ = bonus$.scan(function(prevNumber, bonus) {
     return prevNumber + 1;
 }, -1).timestamp();
@@ -55,12 +67,10 @@ let ghosts$ = ghostTick$
 
 
 
-let apples$ = pacman$
-    .scan( eat, generateApples() )
+let apples$ = pacman$.withLatestFrom(pacman2$ , (pac1 , pac2) => ({pac1, pac2}))
+    .scan( eat, generateApples()  )
     .distinctUntilChanged()
-    .share()
-;
-
+    .share();
 
 
 /* let game$ = Observable.interval( 1000/ FPS )
@@ -80,14 +90,16 @@ let score$ = length$
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
 
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, bonus$, ghosts$, walls$,
-    ( pacman, apples, score, powers, ghosts, walls ) => ({ pacman, apples, score , powers, ghosts, walls}) );
+let scene$ = Observable.combineLatest( pacman$, pacman2$, apples$, score$, bonus$, ghosts$, walls$,
+    ( pacman, pacman2, apples, score, powers, ghosts, walls ) => ({ pacman, pacman2, apples, score , powers, ghosts, walls}) );
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
     .takeWhile( scene => (
         checkEndCondition( scene.apples, scene.powers ) && 
-        ghostColission( scene.pacman, scene.ghosts, scene.powerState))) ;
+        ghostColission( scene.pacman, scene.ghosts) &&
+        ghostColission( scene.pacman2, scene.ghosts)
+        )) ;
 
 game$.subscribe( {
     next: ( scene ) => render( ctx, scene ),

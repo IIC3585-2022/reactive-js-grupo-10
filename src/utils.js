@@ -180,11 +180,11 @@ function getRandomInt(min, max) {
     return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-export function eat( apples, pac ) {
-    let head = pac[ 0 ];
-
+export function eat( apples, {pac1, pac2} ) {
+    let head1 = pac1[ 0 ];
+    let head2 = pac2[ 0 ];
     for ( let i = 0; i < apples.length; i++ ) {
-        if ( checkCollision( apples[ i ], head ) ) {
+        if ( checkCollision( apples[ i ], head1 ) || checkCollision( apples[ i ], head2 ) ) {
             apples.splice( i, 1 );
             return [ ...apples ];
         }
@@ -193,15 +193,16 @@ export function eat( apples, pac ) {
     return apples;
 }
 
+
 export function wallColission( walls, pac ) {
     return walls;
 }
 
-export function eatPower( powers, pac ) {
-    let head = pac[ 0 ];
-
+export function eatPower( powers, {pac1, pac2} ) {
+    let head1 = pac1[ 0 ];
+    let head2 = pac2[ 0 ];
     for ( let i = 0; i < powers.length; i++ ) {
-        if ( checkCollision( powers[ i ], head ) ) {
+        if ( checkCollision( powers[ i ], head1 ) ||checkCollision( powers[ i ], head2 )  ) {
             powers.splice( i, 1 );
             return [ ...powers ];
         }
