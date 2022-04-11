@@ -3,7 +3,8 @@ import { animationFrame } from 'rxjs/scheduler/animationFrame';
 import { timeInterval } from 'rxjs/operators';
 import { checkEndCondition, createCanvasElement, render } from "./canvas";
 import { DIRECTIONS, FPS, POINTS_PER_DOT, PACMAN_SPEED, GHOST_SPEED, SCARE_TIME } from "./constants";
-import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, moveGhosts, ghostColission  } from "./utils";
+import { generateApples, generatePacman, generatePower, move, nextDirection, eat, eatPower, generateGhost, 
+    wallColission, generateWalls, moveGhosts, ghostColission  } from "./utils";
   
 
 const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
@@ -11,9 +12,9 @@ const INITIAL_DIRECTION = DIRECTIONS[ 38 ];
 const canvas = createCanvasElement();
 const ctx = canvas.getContext( '2d' );
 document.body.appendChild( canvas );
-const ghosts = [[1,"red"],[2,"pink"],[3,"orange"],[4,"cyan"]].map(i => generateGhost(i[0], i[1]))
+const ghosts = ["red","pink","orange","cyan"].map((color, index) => generateGhost(index, color))
 
-//const ghosts = [(1,"red"),(2,"pink"),(3,"orange"),(4,"cyan")].map(i => generateGhost(i[0], i[1]))
+console.log(ghosts)
 let keyDown$ = Observable.fromEvent( document.body, 'keydown' );
 
 
@@ -27,30 +28,40 @@ let direction$ = keyDown$
     .map( ( e ) => DIRECTIONS[ e.keyCode ] )
     .filter( direction => !!direction )
     .startWith( INITIAL_DIRECTION )
-    .scan( nextDirection )
     .distinctUntilChanged();
 
 let length$ = new BehaviorSubject(  );
 
+let walls$ = tick$.scan(wallColission, generateWalls()).distinctUntilChanged().share()
+
 let pacman$ = tick$
-    .withLatestFrom( direction$, ( _, direction ) => ({ direction }) )
+    .withLatestFrom( direction$, walls$, ( _, direction, walls ) => ({ direction, walls }) )
     .scan( move, generatePacman() )
     .share();
 
+
+const bonus$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
+const bonusTaken$ = bonus$.scan(function(prevNumber, bonus) {
+    return prevNumber + 1;
+}, -1).timestamp();
+const bonusEnd$ = bonusTaken$.skip(1).delay(SCARE_TIME).timestamp().startWith({
+    timestamp: 0
+});
+
 let ghosts$ = ghostTick$
-    .withLatestFrom(pacman$,( _, pacmanPos ) => ({ pacmanPos }))
+    .withLatestFrom(pacman$, walls$, bonusTaken$, bonusEnd$, ( _, pacmanPos, walls, bonusTaken, bonusEnd ) => ({ pacmanPos, walls, bonusTaken, bonusEnd }))
     .scan( moveGhosts, ghosts )
     .share();
+
+
 
 let apples$ = pacman$
     .scan( eat, generateApples() )
     .distinctUntilChanged()
     .share()
 ;
-let powers$ = pacman$.scan(eatPower, generatePower()).distinctUntilChanged().share()
 
-let powerState$ = powers$.skip( 1 )
-.startWith( false ).scan(state => true).distinctUntilChanged().share()
+
 
 /* let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
@@ -68,13 +79,11 @@ let score$ = length$
     .startWith( 0 )
     .scan( ( score, _ ) => score + POINTS_PER_DOT );
 
-<<<<<<< HEAD
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$,bonusEnd$,
-    ( pacman, apples, score, powers, ghosts, powerState ) => ({ pacman, apples, score , powers, ghosts, powerState}) );
-=======
-let scene$ = Observable.combineLatest( pacman$, apples$, score$, powers$, ghosts$,powerState$,seconds$,
-    ( pacman, apples, score, powers, ghosts, powerState, seconds ) => ({ pacman, apples, score , powers, ghosts, powerState, seconds}) );
->>>>>>> 1408f3cc8b945fcb743c903b4120251cd3384de0
+
+
+    let scene$ = Observable.combineLatest( pacman$, apples$, score$, bonus$, ghosts$, walls$,
+        ( pacman, apples, score, powers, ghosts, walls ) => ({ pacman, apples, score , powers, ghosts, walls}) );
+    
 
 let game$ = Observable.interval( 1000/ FPS )
     .withLatestFrom( scene$, ( _, scene ) => scene )
