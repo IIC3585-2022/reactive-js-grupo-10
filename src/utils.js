@@ -16,13 +16,13 @@ export function move( pac, { direction, walls } ) {
     nx += direction.x;
     ny += direction.y;
 
-
     let newpos = {};
     newpos.x = nx;
     newpos.y = ny;
 
     const colission = walls.some(wall => checkCollision( wall, newpos ) )
     if (colission){
+        console.log(pac)
         return pac;
     } else{
 
@@ -103,14 +103,7 @@ export function moveGhosts( ghosts, { pacmanPos , walls} ) {
     
 }
 
-export function nextDirection( previous, next ) {
-    const isOpposite = ( previous, next ) => {
-        return next.x === -previous.x || next.y === -previous.y;
-    };
-
-    if ( isOpposite( previous, next ) ) {
-        return previous;
-    }
+export function nextDirection( previous, next ) {   
 
     return next;
 }
