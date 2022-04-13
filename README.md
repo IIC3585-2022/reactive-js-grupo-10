@@ -17,4 +17,6 @@ Para ejecutar el programa, nosotros usamos `NodeJS`. Pueden instalar las depende
 
 ## Un poco sobre la aplicación. 
 
-Nuestra aplicación se centra en el uso de la librería `Rxjs`, que combinado con la herramienta `Canvas`, logra implementar un Pacman de 2 jugadores. Tanto Pacman como los fantasmas dependen de "Ticks", que en los observables, indica cada cuanto estos se mueven o generan un cambio en los datos. Luego, cuando ocurre algún evento, como una colisión, se utiliza la función `withLatestFrom()` que nos permite tomar la ultima instancia conocida de nuestro objeto y ejecutar los cambios. Luego, por cada FPS del programa, se ejecuta la función "render" que muestra los cambios al usuario.
+Nuestra aplicación se centra en el uso de la librería `Rxjs`, que combinado con la herramienta `Canvas`, logra implementar un Pacman de 2 jugadores. Tanto Pacman como los fantasmas dependen de "Ticks", que en los observables, indica cada cuanto estos se mueven o generan un cambio en los datos. Luego, cuando ocurre algún evento, como una colisión con manzanas, poderes o fantasmas, se utiliza la función `withLatestFrom()` que nos permite tomar la ultima instancia conocida de nuestro objeto y ejecutar los cambios. Luego, por cada FPS del programa, se ejecuta la función "render" que muestra los cambios al usuario.
+
+Hay más complejidad dentro del código, como el manejo del movimiento, del renderizado, el uso de casillas, entre otros, y se recomienda echar un ojo al juego en caso de tener curiosidad sobre estos aspectos de la aplicación.
